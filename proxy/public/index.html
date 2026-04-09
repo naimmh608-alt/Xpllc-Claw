@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xpllc-Claw — Free Groq API</title>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --card: #16181d;
+      --border: #2a2d36;
+      --accent: #f55036;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --text: #e8eaed;
+      --muted: #6b7280;
+      --code-bg: #1e2028;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    header { border-bottom: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; align-items: center; gap: 1rem; }
+    .logo { font-size: 1.4rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+    .badge { background: var(--green); color: #000; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+
+    .hero { text-align: center; padding: 4rem 1rem 2rem; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1rem; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { color: var(--muted); font-size: 1.1rem; max-width: 550px; margin: 0 auto 2rem; line-height: 1.6; }
+
+    .cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn { padding: 0.8rem 1.8rem; border-radius: 8px; font-size: 1rem; font-weight: 700; cursor: pointer; border: none; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-secondary { background: var(--border); color: var(--text); }
+
+    .stats-row { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 4rem; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem 2rem; text-align: center; min-width: 140px; }
+    .stat-value { font-size: 2rem; font-weight: 900; color: var(--accent); }
+    .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+    .main { max-width: 860px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+    .section { margin-bottom: 3rem; }
+    .section h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 1.2rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); }
+
+    .token-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .token-display { display: flex; align-items: center; gap: 0.8rem; margin-top: 1rem; }
+    #tokenValue { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; font-family: monospace; font-size: 0.9rem; flex: 1; color: var(--green); word-break: break-all; }
+    .copy-btn { background: var(--border); border: none; color: var(--text); padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: 600; }
+    .copy-btn:hover { background: var(--accent); color: #fff; }
+
+    .quota-bar-wrap { margin-top: 1rem; }
+    .quota-label { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.4rem; }
+    .quota-bar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .quota-fill { height: 100%; background: var(--green); border-radius: 99px; transition: width 0.5s; }
+    .quota-fill.warn { background: var(--yellow); }
+    .quota-fill.danger { background: var(--accent); }
+
+    .steps { display: grid; gap: 1rem; }
+    .step { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; align-items: start; }
+    .step-num { width: 2rem; height: 2rem; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; color: #fff; flex-shrink: 0; }
+    .step-body h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step-body p { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+    code, pre { font-family: 'Cascadia Code', 'Fira Code', monospace; }
+    .code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; overflow-x: auto; font-size: 0.85rem; line-height: 1.7; position: relative; }
+    .code-block .copy-code { position: absolute; top: 0.7rem; right: 0.7rem; background: var(--border); border: none; color: var(--muted); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+    .code-block .copy-code:hover { color: var(--text); }
+
+    .model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.8rem; }
+    .model-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+    .model-id { font-family: monospace; font-size: 0.8rem; color: var(--accent); font-weight: 700; }
+    .model-tier { font-size: 0.72rem; background: var(--border); padding: 2px 8px; border-radius: 99px; color: var(--muted); margin: 0.4rem 0; display: inline-block; }
+    .model-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+
+    .msg { padding: 0.7rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-top: 0.8rem; display: none; }
+    .msg.success { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: var(--green); display: block; }
+    .msg.error { background: rgba(245,80,54,0.1); border: 1px solid rgba(245,80,54,0.3); color: var(--accent); display: block; }
+
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; color: var(--muted); font-size: 0.82rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ Xpllc-Claw</div>
+  <span class="badge">FREE</span>
+  <span style="color:var(--muted);font-size:0.85rem;margin-left:auto;">Powered by Groq ultra-fast inference</span>
+</header>
+
+<div class="hero">
+  <h1>Run <span>47 AI Agents</span><br>Free. No credit card.</h1>
+  <p>Get 400 free Groq API requests. Code review, auto bug-fix, TDD, security scan — all agents from Xpllc-Claw, powered by Llama 3 at 800+ tokens/sec.</p>
+  <div class="cta-row">
+    <button class="btn btn-primary" onclick="registerToken()">🎁 Get My Free Token</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('check').scrollIntoView({behavior:'smooth'})">Check Quota</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-value">400</div><div class="stat-label">Free Requests</div></div>
+    <div class="stat-card"><div class="stat-value">47</div><div class="stat-label">AI Agents</div></div>
+    <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Groq Models</div></div>
+    <div class="stat-card"><div class="stat-value">800+</div><div class="stat-label">Tokens/sec</div></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Token section -->
+  <div class="section" id="token-section">
+    <h2>🔑 Your Free Token</h2>
+    <div class="token-box">
+      <p style="color:var(--muted);font-size:0.9rem;">Click below to generate your unique token. This gives you 400 free API requests. Keep it safe — it's yours.</p>
+      <div class="token-display">
+        <div id="tokenValue" style="color:var(--muted);">Click "Get My Free Token" above to generate...</div>
+        <button class="copy-btn" onclick="copyToken()">Copy</button>
+      </div>
+      <div class="quota-bar-wrap" id="quotaWrap" style="display:none;">
+        <div class="quota-label">
+          <span id="quotaUsed">0 used</span>
+          <span id="quotaLeft">400 remaining</span>
+        </div>
+        <div class="quota-bar"><div class="quota-fill" id="quotaFill" style="width:100%"></div></div>
+      </div>
+      <div id="tokenMsg"></div>
+    </div>
+  </div>
+
+  <!-- How to use -->
+  <div class="section">
+    <h2>🚀 Quick Start</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Get your token</h3>
+          <p>Click "Get My Free Token" above. Your token is saved in your browser automatically.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Set environment variables</h3>
+          <p>Add these to your shell or <code>.env</code> file:</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top:1rem;">
+      <button class="copy-code" onclick="copyCode(this)">copy</button>
+      <pre id="envCode"># In your terminal or .env file
+export XPLLC_PROXY_URL=<span id="proxyUrl">https://your-deployment-url.com</span>
+export XPLLC_USER_TOKEN=your-token-here    # from step 1</pre>
+    </div>
+
+    <div class="steps" style="margin-top:1rem;">
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Clone & run any agent</h3>
+          <p>Clone the repo and run any of the 47 agents:</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top:0.8rem;">
+      <button class="copy-code" onclick="copyCode(this)">copy</button>
+      <pre># Clone the repo
+git clone https://github.com/naimmh608-alt/Xpllc-Claw.git
+cd Xpllc-Claw
+
+# Code review a file
+node scripts/groq-runner.js \
+  --proxy $XPLLC_PROXY_URL \
+  --token $XPLLC_USER_TOKEN \
+  --agent code-reviewer \
+  --file src/app.ts
+
+# Auto fix build errors
+npm run build 2>&1 | node scripts/groq-runner.js \
+  --proxy $XPLLC_PROXY_URL \
+  --token $XPLLC_USER_TOKEN \
+  --agent build-error-resolver --stdin
+
+# Plan a feature
+node scripts/groq-runner.js \
+  --proxy $XPLLC_PROXY_URL \
+  --token $XPLLC_USER_TOKEN \
+  --agent planner \
+  --prompt "Add OAuth2 login with Google"</pre>
+    </div>
+
+    <div class="steps" style="margin-top:1rem;">
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Or use the API directly (curl / fetch)</h3>
+          <p>The API is OpenAI-compatible. Drop in any HTTP client:</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top:0.8rem;">
+      <button class="copy-code" onclick="copyCode(this)">copy</button>
+      <pre>curl -X POST <span class="proxyUrlInline">https://your-deployment.com</span>/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "X-User-Token: YOUR_TOKEN" \
+  -d '{
+    "model": "llama-3.1-70b-versatile",
+    "messages": [{"role":"user","content":"Review this code..."}],
+    "stream": false
+  }'</pre>
+    </div>
+  </div>
+
+  <!-- Check quota -->
+  <div class="section" id="check">
+    <h2>📊 Check Your Quota</h2>
+    <div class="token-box">
+      <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem;">Enter your token to check remaining requests:</p>
+      <div style="display:flex;gap:0.8rem;flex-wrap:wrap;">
+        <input id="checkToken" placeholder="Paste your token here..." style="flex:1;background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:0.7rem 1rem;color:var(--text);font-family:monospace;font-size:0.85rem;min-width:200px;" />
+        <button class="btn btn-primary" onclick="checkQuota()">Check</button>
+      </div>
+      <div id="quotaResult" style="margin-top:1rem;display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Models -->
+  <div class="section">
+    <h2>🤖 Available Models</h2>
+    <div class="model-grid" id="modelGrid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Built with ❤️ by <a href="https://github.com/naimmh608-alt/Xpllc-Claw" target="_blank">Xpllc-Claw</a> —
+  Powered by <a href="https://groq.com" target="_blank">Groq</a> ultra-fast inference —
+  <a href="https://github.com/naimmh608-alt/Xpllc-Claw" target="_blank">GitHub</a>
+</footer>
+
+<script>
+const BASE_URL = window.location.origin;
+let currentToken = localStorage.getItem('xpllc_token') || '';
+
+// Update proxy URL displays
+document.querySelectorAll('#proxyUrl, .proxyUrlInline').forEach(el => el.textContent = BASE_URL);
+
+// Models data
+const MODELS = [
+  { id: 'llama-3.3-70b-versatile', tier: 'opus-tier', desc: 'Most capable — planning, architecture' },
+  { id: 'llama-3.1-70b-versatile', tier: 'sonnet-tier', desc: 'Balanced — coding, reviews' },
+  { id: 'llama-3.1-8b-instant', tier: 'haiku-tier', desc: 'Ultra-fast — lightweight tasks' },
+  { id: 'deepseek-r1-distill-llama-70b', tier: 'opus-tier', desc: 'Reasoning — math, logic' },
+  { id: 'mixtral-8x7b-32768', tier: 'sonnet-tier', desc: '32k context — large codebases' },
+  { id: 'gemma2-9b-it', tier: 'haiku-tier', desc: 'Google Gemma — instruction following' },
+  { id: 'llama-3.2-90b-vision-preview', tier: 'opus-tier', desc: 'Vision + code tasks' },
+  { id: 'llama-3.2-11b-vision-preview', tier: 'sonnet-tier', desc: 'Vision lightweight' },
+];
+document.getElementById('modelGrid').innerHTML = MODELS.map(m => `
+  <div class="model-card">
+    <div class="model-id">${m.id}</div>
+    <div class="model-tier">${m.tier}</div>
+    <div class="model-desc">${m.desc}</div>
+  </div>
+`).join('');
+
+// If token exists, auto-display
+if (currentToken) {
+  showToken(currentToken);
+  fetchQuota(currentToken);
+}
+
+async function registerToken() {
+  const btn = document.querySelector('.btn-primary');
+  btn.textContent = '⏳ Registering...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${BASE_URL}/register`);
+    const data = await res.json();
+    currentToken = data.token;
+    localStorage.setItem('xpllc_token', currentToken);
+    showToken(currentToken);
+    updateQuotaBar(data.remaining, data.limit);
+    showMsg('tokenMsg', `✅ Token created! You have ${data.limit} free requests.`, 'success');
+  } catch(e) {
+    showMsg('tokenMsg', '❌ Error generating token. Is the server running?', 'error');
+  } finally {
+    btn.textContent = '🎁 Get My Free Token';
+    btn.disabled = false;
+  }
+}
+
+function showToken(token) {
+  const el = document.getElementById('tokenValue');
+  el.textContent = token;
+  el.style.color = 'var(--green)';
+  document.getElementById('quotaWrap').style.display = 'block';
+  // Also prefill the check input
+  document.getElementById('checkToken').value = token;
+}
+
+async function fetchQuota(token) {
+  try {
+    const res = await fetch(`${BASE_URL}/quota/${token}`);
+    const data = await res.json();
+    if (data.remaining !== undefined) updateQuotaBar(data.remaining, data.limit);
+  } catch {}
+}
+
+function updateQuotaBar(remaining, limit) {
+  const pct = Math.round((remaining / limit) * 100);
+  const fill = document.getElementById('quotaFill');
+  fill.style.width = pct + '%';
+  fill.className = 'quota-fill' + (pct < 20 ? ' danger' : pct < 50 ? ' warn' : '');
+  document.getElementById('quotaUsed').textContent = `${limit - remaining} used`;
+  document.getElementById('quotaLeft').textContent = `${remaining} remaining`;
+}
+
+function copyToken() {
+  const token = document.getElementById('tokenValue').textContent;
+  if (!token || token.includes('Click')) return;
+  navigator.clipboard.writeText(token).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function copyCode(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = '✓';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  });
+}
+
+async function checkQuota() {
+  const token = document.getElementById('checkToken').value.trim();
+  if (!token) return;
+  const result = document.getElementById('quotaResult');
+  result.style.display = 'block';
+  result.innerHTML = '<span style="color:var(--muted)">Checking...</span>';
+  try {
+    const res = await fetch(`${BASE_URL}/quota/${token}`);
+    const data = await res.json();
+    if (res.status === 404) {
+      result.innerHTML = `<div class="msg error">Token not found. Visit the top of this page to register.</div>`;
+      return;
+    }
+    const pct = Math.round(((data.limit - data.remaining) / data.limit) * 100);
+    const statusColor = data.status === 'active' ? 'var(--green)' : data.status === 'exhausted' ? 'var(--accent)' : 'var(--yellow)';
+    result.innerHTML = `
+      <div style="display:grid;gap:0.6rem;">
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;">
+          <span>Status: <strong style="color:${statusColor}">${data.status.toUpperCase()}</strong></span>
+          <span style="color:var(--muted)">Used ${data.used}/${data.limit} (${pct}%)</span>
+        </div>
+        <div class="quota-bar"><div class="quota-fill ${pct > 80 ? 'danger' : pct > 50 ? 'warn' : ''}" style="width:${pct}%"></div></div>
+        <div style="font-size:0.8rem;color:var(--muted)">
+          <strong style="color:var(--green);font-size:1.2rem;">${data.remaining}</strong> requests remaining
+          ${data.lastRequest ? ` · Last used: ${new Date(data.lastRequest).toLocaleString()}` : ''}
+        </div>
+      </div>`;
+  } catch(e) {
+    result.innerHTML = `<div class="msg error">Error checking quota. Server may be down.</div>`;
+  }
+}
+
+function showMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.className = `msg ${type}`;
+  el.textContent = text;
+}
+</script>
+</body>
+</html>
