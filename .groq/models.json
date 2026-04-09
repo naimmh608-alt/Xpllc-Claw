@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "description": "Groq model mappings for ECC agents",
+  "baseUrl": "https://api.groq.com/openai/v1",
+  "modelAliases": {
+    "opus": "llama-3.3-70b-versatile",
+    "sonnet": "llama-3.1-70b-versatile",
+    "haiku": "llama-3.1-8b-instant",
+    "default": "llama-3.1-70b-versatile"
+  },
+  "availableModels": {
+    "llama-3.3-70b-versatile": {
+      "contextWindow": 131072,
+      "maxOutputTokens": 32768,
+      "tier": "opus",
+      "description": "Most capable — complex reasoning, architecture, planning",
+      "speed": "fast"
+    },
+    "llama-3.1-70b-versatile": {
+      "contextWindow": 131072,
+      "maxOutputTokens": 32768,
+      "tier": "sonnet",
+      "description": "Balanced — coding, reviews, most development tasks",
+      "speed": "fast"
+    },
+    "llama-3.1-8b-instant": {
+      "contextWindow": 131072,
+      "maxOutputTokens": 8192,
+      "tier": "haiku",
+      "description": "Fastest — high-volume, cost-sensitive, simple tasks",
+      "speed": "ultra-fast"
+    },
+    "mixtral-8x7b-32768": {
+      "contextWindow": 32768,
+      "maxOutputTokens": 32768,
+      "tier": "sonnet",
+      "description": "Mixture-of-experts — good for diverse coding tasks",
+      "speed": "fast"
+    },
+    "gemma2-9b-it": {
+      "contextWindow": 8192,
+      "maxOutputTokens": 8192,
+      "tier": "haiku",
+      "description": "Google Gemma 2 — instruction following, lightweight tasks",
+      "speed": "ultra-fast"
+    },
+    "deepseek-r1-distill-llama-70b": {
+      "contextWindow": 131072,
+      "maxOutputTokens": 16384,
+      "tier": "opus",
+      "description": "DeepSeek R1 reasoning model — math, logic, deep analysis",
+      "speed": "medium"
+    },
+    "llama-3.2-90b-vision-preview": {
+      "contextWindow": 131072,
+      "maxOutputTokens": 8192,
+      "tier": "opus",
+      "description": "Vision-capable — image understanding + code tasks",
+      "speed": "medium",
+      "vision": true
+    },
+    "llama-3.2-11b-vision-preview": {
+      "contextWindow": 131072,
+      "maxOutputTokens": 8192,
+      "tier": "sonnet",
+      "description": "Vision-capable lightweight model",
+      "speed": "fast",
+      "vision": true
+    }
+  }
+}
